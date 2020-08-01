@@ -14,6 +14,7 @@ void main(List<String> arguments) {
   Map<String, dynamic> icons = json.decode(content);
 
   Map<String, String> iconDefinitions = {};
+  Map<String, String> iconStringName = {};
 
   bool hasDuotone = false;
 
@@ -30,6 +31,7 @@ void main(List<String> arguments) {
           'regular',
           unicode,
         );
+        iconStringName[iconName] = generateIconString(iconName);
       }
 
       if (styles.contains('duotone')) {
@@ -38,6 +40,8 @@ void main(List<String> arguments) {
 
       for (String style in styles) {
         String name = '${style}_$iconName';
+        iconStringName[name] = generateIconString(name);
+
         iconDefinitions[name] = generateIconDefinition(
           name,
           style,
@@ -50,6 +54,7 @@ void main(List<String> arguments) {
         styles.first,
         unicode,
       );
+      iconStringName[iconName] = generateIconString(iconName);
     }
   }
 
@@ -73,13 +78,26 @@ void main(List<String> arguments) {
     '',
     'class FontAwesomeIcons {',
   ]);
+  generatedOutput.add('static const getIconString = {');
 
+  generatedOutput.addAll(iconStringName.values);
+  generatedOutput.add('};');
   generatedOutput.addAll(iconDefinitions.values);
 
   generatedOutput.add('}');
 
   File output = new File('lib/font_awesome_flutter.dart');
   output.writeAsStringSync(generatedOutput.join('\n'));
+}
+
+String generateIconString(String iconName) {
+  if (iconName == '500px') {
+    iconName = 'fiveHundredPx';
+  }
+
+  var defaultname = iconName;
+  iconName = new ReCase(iconName).camelCase;
+  return "'$defaultname':$iconName,";
 }
 
 String generateIconDefinition(String iconName, String style, String unicode) {
