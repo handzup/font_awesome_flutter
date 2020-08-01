@@ -24,15 +24,16 @@ void main(List<String> arguments) {
     List<String> styles = (icon['styles'] as List).cast<String>();
 
     if (styles.length > 1) {
-      if (styles.contains('regular')) {
-        styles.remove('regular');
-        iconDefinitions[iconName] = generateIconDefinition(
-          iconName,
-          'regular',
-          unicode,
-        );
-        iconStringName[iconName] = generateIconString(iconName);
-      }
+      // if (styles.contains('regular')) {
+      //   styles.remove('regular');
+      //   var regName = 'far fa-$iconName';
+      //   iconDefinitions[iconName] = generateIconDefinition(
+      //     iconName,
+      //     'regular',
+      //     unicode,
+      //   );
+      //   iconStringName[regName] = generateIconString(regName);
+      // }
 
       if (styles.contains('duotone')) {
         hasDuotone = true;
@@ -40,7 +41,24 @@ void main(List<String> arguments) {
 
       for (String style in styles) {
         String name = '${style}_$iconName';
-        iconStringName[name] = generateIconString(name);
+        var regName;
+        if (style == 'duotone') {
+          regName = 'fad fa-$iconName';
+        }
+        if (style == 'regular') {
+          regName = 'far fa-$iconName';
+        }
+        if (style == 'light') {
+          regName = 'fal fa-$iconName';
+        }
+        if (style == 'solid') {
+          regName = 'fas fa-$iconName';
+        }
+        if (style == 'brands') {
+          regName = 'fab fa-$iconName';
+        }
+
+        iconStringName[name] = generateIconString(regName, name);
 
         iconDefinitions[name] = generateIconDefinition(
           name,
@@ -49,12 +67,28 @@ void main(List<String> arguments) {
         );
       }
     } else {
+      var regName;
+      if (styles.first == 'duotone') {
+        regName = 'fad fa-$iconName';
+      }
+      if (styles.first == 'regular') {
+        regName = 'far fa-$iconName';
+      }
+      if (styles.first == 'light') {
+        regName = 'fal fa-$iconName';
+      }
+      if (styles.first == 'solid') {
+        regName = 'fas fa-$iconName';
+      }
+      if (styles.first == 'brands') {
+        regName = 'fab fa-$iconName';
+      }
       iconDefinitions[iconName] = generateIconDefinition(
         iconName,
         styles.first,
         unicode,
       );
-      iconStringName[iconName] = generateIconString(iconName);
+      iconStringName[iconName] = generateIconString(regName, iconName);
     }
   }
 
@@ -90,14 +124,13 @@ void main(List<String> arguments) {
   output.writeAsStringSync(generatedOutput.join('\n'));
 }
 
-String generateIconString(String iconName) {
+String generateIconString(String iconName, String secondName) {
   if (iconName == '500px') {
     iconName = 'fiveHundredPx';
   }
 
-  var defaultname = iconName;
-  iconName = new ReCase(iconName).camelCase;
-  return "'$defaultname':$iconName,";
+  secondName = new ReCase(secondName).camelCase;
+  return "'$iconName':$secondName,";
 }
 
 String generateIconDefinition(String iconName, String style, String unicode) {
